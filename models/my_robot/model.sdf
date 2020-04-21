@@ -1,0 +1,178 @@
+<?xml version='1.0'?>
+<sdf version='1.4'>
+  <model name="my_robot">
+     <static>false</static>
+     <link name='chassis'>
+        <pose>0 0 0.1 0 0 0</pose>
+        <inertial>
+           <mass>10.0</mass>
+           <pose>0.0 0 0.1 0 0 0</pose>
+           <inertia>
+              <ixx>0.5</ixx>
+              <iyy>1.0</iyy>
+              <izz>0.1</izz>
+           </inertia>
+        </inertial>
+        <collision name='collision'>
+            <geometry>
+                <box>
+                   <size>0.4 0.2 0.1</size>
+                </box>
+            </geometry>
+        </collision>
+        <visual name='visual'>
+           <pose>0 0 0.0 0 0 0</pose>
+           <geometry>
+              <box>
+                 <size>0.4 0.2 0.1</size>
+              </box>
+           </geometry>
+         </visual>
+         <collision name='caster_collision'>
+            <pose>-0.15 0 -0.05 0 0 0</pose>
+            <geometry>
+               <sphere>
+                  <radius>.05</radius>
+               </sphere>
+            </geometry>
+            <surface>
+              <friction>
+                 <ode>
+                    <mu>0</mu>
+                    <mu2>0</mu2>
+                    <slip1>1.0</slip1>
+                    <slip2>1.0</slip2>
+                 </ode>
+              </friction>
+           </surface>
+        </collision>
+        <visual name='caster_visual'>
+           <pose>-0.15 0 -0.05 0 0 0</pose>
+           <geometry>
+              <sphere>
+                 <radius>.05</radius>
+              </sphere>
+           </geometry>
+         </visual>
+     </link>
+
+     <link name="right_wheel">
+        <pose>0.1 0.13 0.1 0 1.5707 1.5707</pose>
+        <inertial>
+           <pose>0.1 0.13 0.1 0 1.5707 1.5707</pose>
+           <mass>1.0</mass>
+           <inertia>
+              <ixx>0.0045</ixx>
+              <iyy>0.005</iyy>
+              <izz>0.0045</izz>
+           </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry>
+              <cylinder>
+                 <radius>.1</radius>
+                 <length>.05</length>
+              </cylinder>
+          </geometry>
+            <surface>
+              <friction>
+                 <ode>
+                    <mu>10</mu>
+                    <mu2>10</mu2>
+                 </ode>
+              </friction>
+           </surface>
+        </collision>
+        <visual name="visual">
+          <geometry>
+              <cylinder>
+                 <radius>.1</radius>
+                 <length>.05</length>
+              </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <link name="left_wheel">
+        <pose>0.1 -0.13 0.1 0 1.5707 1.5707</pose>
+        <inertial>
+           <pose>0.1 0.13 0.1 0 1.5707 1.5707</pose>
+           <mass>1.0</mass>
+           <inertia>
+              <ixx>0.0045</ixx>
+              <iyy>0.005</iyy>
+              <izz>0.0045</izz>
+           </inertia>
+        </inertial>
+        <collision name="collision">
+           <geometry>
+              <cylinder>
+                 <radius>0.1</radius>
+                 <length>0.05</length>
+              </cylinder>
+           </geometry>
+            <surface>
+              <friction>
+                 <ode>
+                    <mu>10</mu>
+                    <mu2>10</mu2>
+                 </ode>
+              </friction>
+           </surface>
+        </collision>
+        <visual name="visual">
+           <geometry>
+              <cylinder>
+                 <radius>0.1</radius>
+                 <length>0.05</length>
+             </cylinder>
+           </geometry>
+        </visual>
+      </link>
+      <include>
+      <uri>model://rplidar</uri>
+      <pose>0 0 0.15 0 0 0</pose>
+    </include>
+    <joint name="rplidar_joint" type="fixed">
+      <child>rplidar::base</child>
+      <parent>chassis</parent>
+    </joint>
+
+      <joint type="revolute" name="left_wheel_joint">
+         <pose>0 0 -0.03 0 0 0</pose>
+         <child>left_wheel</child>
+         <parent>chassis</parent>
+         <axis>
+            <xyz>0 1 0</xyz>
+         </axis>
+      </joint>
+
+      <joint type="revolute" name="right_wheel_joint">
+         <pose>0 0 0.03 0 0 0</pose>
+         <child>right_wheel</child>
+         <parent>chassis</parent>
+         <axis>
+            <xyz>0 1 0</xyz>
+         </axis>
+      </joint>
+
+      <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+         <alwaysOn>true</alwaysOn>
+         <updateRate>20</updateRate>
+         <leftJoint>left_wheel_joint</leftJoint>
+         <rightJoint>right_wheel_joint</rightJoint>
+         <wheelSeparation>0.4</wheelSeparation>
+         <wheelDiameter>0.1</wheelDiameter>
+         <wheelTorque>20</wheelTorque>
+         <!--wheelAcceleration>5</wheelAcceleration-->
+         <commandTopic>cmd_vel</commandTopic>
+         <odometryTopic>odom</odometryTopic>
+         <odometryFrame>odom</odometryFrame>
+         <publishTf>1</publishTf>
+         <publishWheelJointState>true</publishWheelJointState>
+         <robotBaseFrame>chassis</robotBaseFrame>
+      </plugin>
+
+   </model>
+</sdf>
+ 
